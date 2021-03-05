@@ -10,3 +10,4 @@ node_modules/
 
 #firebaseConfig (process.env returning undefined)
 src/firebase.ts
+src/dbconfig.ts

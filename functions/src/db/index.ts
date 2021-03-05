@@ -3,16 +3,17 @@ import { Sequelize } from 'sequelize-typescript';
 // import _ from 'lodash';
 // import Faker from 'faker';
 import { config } from 'dotenv';
+import dbconfig from "../dbconfig";
 
 config();
 const {
-  DB_NAME = 'ibdlytbb',
-  DB_USERNAME = 'ibdlytbb',
-  DB_PASS = 'uTgPtpVO2v_oWG1DFTf5t9k2CZyAQAdb',
-  DB_HOST = 'ziggy.db.elephantsql.com',
-} = process.env;
+  DB_NAME,
+  DB_USERNAME,
+  DB_PASS,
+  DB_HOST,
+} = dbconfig;
 
-console.log('HOSTNAME', DB_HOST);
+// console.log('HOSTNAME', DB_HOST, dbconfig );
 
 const connection = new Sequelize(
   DB_NAME,
