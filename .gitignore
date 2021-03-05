@@ -8,7 +8,7 @@ firebase-debug.log*
 firebase-debug.*.log*
 
 #firebaseConfig (process.env returning undefined)
-./functions/src/firebase.ts
+functions/src/firebase.ts
 
 # Firebase cache
 .firebase/
