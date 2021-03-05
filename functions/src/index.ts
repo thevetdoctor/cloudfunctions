@@ -6,6 +6,7 @@ import { StatusCodes} from "http-status-codes";
 import { graphqlHTTP } from 'express-graphql';
 import Schema from './db/schema';
 import { auth } from './firebase';
+import CORS from 'cors';
 
 const signIn = async (email: string, password: string) => {
         let response = await auth
@@ -40,6 +41,7 @@ const register = async (email: string, password: string) => {
 const app = express();
 
 // app.use('/auth/', router);
+app.use(CORS({ origin: true }));
 
 
 app.post('/signup', async (req: any, res: any) => {
