@@ -6,7 +6,7 @@ import { StatusCodes} from "http-status-codes";
 import { graphqlHTTP } from 'express-graphql';
 import Schema from './db/schema';
 import { auth } from './firebase';
-import CORS from 'cors';
+const CORS = require("cors");
 
 const signIn = async (email: string, password: string) => {
         let response = await auth
