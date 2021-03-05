@@ -3,6 +3,8 @@ const express = require('express');
 import { StatusCodes} from "http-status-codes";
 // import _ from "lodash";
 // import router from './routes/index';
+import { graphqlHTTP } from 'express-graphql';
+import Schema from './db/schema';
 import { auth } from './firebase';
 
 const signIn = async (email: string, password: string) => {
@@ -111,6 +113,12 @@ app.post('/login', async(req: any, res: any) => {
         });
     }
   });
+
+  app.use('/graphql', graphqlHTTP({
+    schema: Schema,
+    pretty: true,
+    graphiql: true,
+  }));
 
 app.get('/', (req: any, res: any) => res
   .status(StatusCodes.OK)
