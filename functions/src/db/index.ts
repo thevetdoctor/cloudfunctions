@@ -13,8 +13,6 @@ const {
   DB_HOST,
 } = dbconfig;
 
-// console.log('HOSTNAME', DB_HOST, dbconfig );
-
 const connection = new Sequelize(
   DB_NAME,
   DB_USERNAME,
