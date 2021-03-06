@@ -29,37 +29,31 @@ const register = async (email: string, password: string) => {
             });
             return response;
 }
-  
-const update = async (password: string) => {
+    
+const forgotPassword = async (email: string) => {
 
-        const passwordUpdate = async (password: any) => {
         let response = await auth
-                        .currentUser
-                        .updatePassword(password)
-                        .then((auth: any) => {
-                            if (auth) {
-                                return { success: true, message: 'Update successful' };
-                            }
+                        .sendPasswordResetEmail(email)
+                        .then(() => {
+                                return { success: true, message: 'Reset Email sent' };
                         })
                         .catch((error: any) => {
                             return { success: false, message: error.message };
                         });
             return response;
-        }
+}
 
-        await auth
-            .onAuthStateChanged((authUser: any) => {
-                
-                if (authUser) {
-                    // the user just logged in / the user was logged in
-                    console.log('user is signed in as > ', authUser?.email);      
-                    passwordUpdate(password);
-                } else {
-                    // the user is logged out
-                    console.log('User is not signed in');
-                    return { success: false, message: 'User is not signed in' };
-                };
-            });
+const resetPassword = async (code: string, newPassword: string) => {
+
+        let response = await auth
+                        .confirmPasswordReset(code, newPassword)
+                        .then(() => {
+                                return { success: true, message: 'Password reset was successful' };
+                        })
+                        .catch((error: any) => {
+                            return { success: false, message: error.message };
+                        });
+            return response;
 }
     
-export { signIn, register, update };
+export { signIn, register, forgotPassword, resetPassword };

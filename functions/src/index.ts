@@ -1,12 +1,13 @@
 import * as functions from "firebase-functions";
 const express = require('express');
 import { StatusCodes} from "http-status-codes";
-// import _ from "lodash";
 // import router from './routes/index';
 import { graphqlHTTP } from 'express-graphql';
 import Schema from './db/schema';
 import { auth } from './firebase';
+import userController from './controllers/userController';
 const CORS = require("cors");
+
 
 const signIn = async (email: string, password: string) => {
         let response = await auth
@@ -48,7 +49,6 @@ app.post('/signup', async (req: any, res: any) => {
   const { email, password } = req.body;
   try {
       const signupResponse = await register(email, password);
-      // console.log(req.body, signupResponse);
       if(signupResponse.success) {
           const { auth: { user: { uid, email, authDomain, createdAt, lastLoginAt } } } = signupResponse;
           return res
@@ -61,7 +61,6 @@ app.post('/signup', async (req: any, res: any) => {
                           createdAt,
                           lastLoginAt
                       },
-                      // auth: signupResponse.auth.user
                   });
       } else {
           return res
@@ -83,9 +82,7 @@ app.post('/login', async(req: any, res: any) => {
   const { email, password } = req.body;
 
     try {
-        // const loginResponse = { success: 'Login successful', auth: { user : { uid : '', email, authDomain: '', createdAt: '', lastLoginAt: '' }}, message: ''};
         const loginResponse = await signIn(email, password);
-        // console.log(req.body, loginResponse);
         if(loginResponse.success) {
             const { uid, email, authDomain, createdAt, lastLoginAt } = loginResponse.auth.user;
             return res
@@ -98,7 +95,6 @@ app.post('/login', async(req: any, res: any) => {
                             createdAt,
                             lastLoginAt
                         },
-                        // auth: loginResponse.auth.user
                     });
         } else {
             return res
@@ -116,11 +112,15 @@ app.post('/login', async(req: any, res: any) => {
     }
   });
 
-  app.use('/graphql', graphqlHTTP({
-    schema: Schema,
-    pretty: true,
-    graphiql: true,
-  }));
+app.post('/forgotpassword', userController.forgotPassword);
+
+app.post('/resetpassword', userController.resetPassword);
+
+app.use('/graphql', graphqlHTTP({
+schema: Schema,
+pretty: true,
+graphiql: true,
+}));
 
 app.get('/', (req: any, res: any) => res
   .status(StatusCodes.OK)
