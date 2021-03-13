@@ -1,11 +1,12 @@
-const Sequelizee = require('sequelize');
-import { Sequelize } from 'sequelize-typescript';
-// import _ from 'lodash';
-// import Faker from 'faker';
-import { config } from 'dotenv';
+// Import/require dependencies
+import { ForeignKey, Sequelize } from 'sequelize-typescript';
 import dbconfig from "../dbconfig";
+import { userModel } from './models/userModel';
+import { productModel } from './models/productModel';
+import { imageModel } from './models/imageModel';
+import { postModel } from './models/postModel';
 
-config();
+// Destructure database configuration variables from 'dbconfig' module
 const {
   DB_NAME,
   DB_USERNAME,
@@ -13,6 +14,7 @@ const {
   DB_HOST,
 } = dbconfig;
 
+// Initialize new database connection
 const connection = new Sequelize(
   DB_NAME,
   DB_USERNAME,
@@ -24,61 +26,25 @@ const connection = new Sequelize(
   },
 );
 
-const User = connection.define('user', {
-  firstName: {
-    type: Sequelizee.STRING,
-    allowNull: true,
-  },
-  lastName: {
-    type: Sequelizee.STRING,
-    allowNull: true,
-  },
-  email: {
-    type: Sequelizee.STRING,
-    allowNull: false,
-    unique: true,
-    validate: {
-      isEmail: true,
-    },
-  },
-  uid: {
-    type: Sequelizee.STRING,
-    allowNull: false,
-  },
-});
-
-const Product = connection.define('product', {
-  name: {
-    type: Sequelizee.STRING,
-    allowNull: false,
-  },
-  description: {
-    type: Sequelizee.STRING,
-    allowNull: false,
-  },
-});
+// Declare database models
+const User = connection.define('user', userModel);
+const Product = connection.define('product', productModel);
+const Image = connection.define('image', imageModel);
+const Post = connection.define('post', postModel);
 
 // Relationships
 User.hasMany(Product);
 Product.belongsTo(User);
+User.hasMany(Post);
+Post.belongsTo(User);
+Product.hasMany(Image);
+Image.belongsTo(Product, {
+  foreignKey: 'productId'
+});
 
-// connection.sync({ force: true }).then(() => console.log("DB refreshed"));
-// .then(() => {
-//     _.times(10, () => {
-//         return User.create({
-//             firstName: Faker.name.firstName(),
-//             lastName: Faker.name.lastName(),
-//             email: Faker.internet.email()
-//         })
-//         .then(user => {
-//             return user.createProduct({
-//                 name: `Sample product for ${user.firstName}`,
-//                 description: 'Description for product'
-//             });
-//         })
-//     });
-// });
+// connection.sync({ alter: true }).then(() => console.log("DB refreshed"));
 
+// Initialize database connecttion
 connection.authenticate()
   .then(() => {
     console.log('Connection to database establised');
