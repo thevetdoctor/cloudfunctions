@@ -34,8 +34,7 @@ graphiql: true,
 app.get('/', (req: any, res: any) => res
   .status(StatusCodes.OK)
   .send({
-    message: 'Welcome to BuildMyHouse',
-    data: {},
+    message: 'Welcome to BuildMyHouse'
   }));
 
 // Connect express app to firebase serverless platform
