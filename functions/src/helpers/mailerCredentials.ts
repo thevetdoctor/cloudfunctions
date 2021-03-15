@@ -1,5 +1,5 @@
-export const  mailerCredentials = {
+// export const  mailerCredentials = {
 
-    user: "consultoba@gmail.com",
-    pass: "bafotfarms"
-  }
+//     user: "consultoba@gmail.com",
+//     pass: "bafotfarms"
+//   }

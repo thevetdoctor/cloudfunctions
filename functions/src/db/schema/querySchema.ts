@@ -30,6 +30,9 @@ import {
           email: {
             type: GraphQLString,
           },
+          status: {
+            type: GraphQLString,
+          },
         },
         resolve(root, args) {
           return db.models.user.findAll({ where: args });

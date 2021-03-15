@@ -2,11 +2,15 @@ import { forgotPassword, resetPassword, register, signIn } from '../helpers/func
 import {
     StatusCodes,
 } from 'http-status-codes';
+const cors = require("cors")({ origin : true });
 
 const userController = {
 
     signup() {
         async (req: any, res: any) => {
+            res.set("Access-Control-Allow-Origin", "*");
+            res.set("Access-Control-Allow-Headers", "Content-Type");
+
             const { email, password } = req.body;
             try {
                 const signupResponse = await register(email, password);
@@ -44,6 +48,9 @@ const userController = {
 
     login() {
         async (req, res) => {
+            res.set("Access-Control-Allow-Origin", "*");
+            res.set("Access-Control-Allow-Headers", "Content-Type");
+            
             const { email, password } = req.body;
         
             try {
