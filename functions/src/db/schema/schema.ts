@@ -121,6 +121,12 @@ import {
           return product.userId;
         },
       },
+      price: {
+        type: GraphQLInt,
+        resolve(product) {
+          return product.price;
+        }
+      },
       likes: {
         type: GraphQLInt,
         resolve(product) {
@@ -260,6 +266,9 @@ import {
           },
           description: {
             type: GraphQLString,
+          },
+          price: {
+            type: GraphQLInt,
           },
           status: {
             type: GraphQLString,
@@ -434,6 +443,9 @@ import {
             userId: {
               type: new GraphQLNonNull(GraphQLInt),
             },
+            price: {
+              type: GraphQLInt,
+            },
             status: {
               type: GraphQLString,
             }
@@ -443,6 +455,7 @@ import {
               name: args.name,
               description: args.description,
               userId: args.userId,
+              price: args.price,
               status: args.status ? args.statu : 'basic'
             });
           }
@@ -465,6 +478,9 @@ import {
             status: {
               type: GraphQLString,
             },
+            price: {
+              type: GraphQLInt,
+            },
             likes: {
               type: GraphQLInt,
             },
@@ -474,6 +490,7 @@ import {
               name: args.name,
               description: args.description,
               status: args.status,
+              price: args.price,
               likes: args.likes
             }, { where: { 
               id: args.id, 

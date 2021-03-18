@@ -7,14 +7,14 @@ import Schema from './db/schema/schema';
 // import Schema from './db/schema/index';
 import userController from './controllers/userController';
 // import mailController from "./controllers/mailController";
-// const cors = require("cors")({ origin : true });
+const cors = require("cors");
 
 // Initialize express app
 const app = express();
 
 // Set cross origin access
-// app.use(cors);
-// app.options('*', cors);
+app.use(cors({ origin : true }));
+app.options('*', cors);
 // app.use((req: any, res: any, next: any): void => {
 //   res.setHeader("Access-Control-Allow-Origin", "*");
 //   res.setHeader("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE", "OPTIONS");

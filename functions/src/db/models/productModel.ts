@@ -19,6 +19,10 @@ const Sequelizee = require('sequelize');
       type: Sequelizee.INTEGER,
       allowNull: false,
     },
+    price: {
+      type: Sequelizee.INTEGER,
+      allowNull: true,
+    },
     likes: {
       type: Sequelizee.INTEGER,
       allowNull: true,

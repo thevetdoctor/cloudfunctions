@@ -141,6 +141,9 @@ import db from '../index';
             userId: {
               type: new GraphQLNonNull(GraphQLInt),
             },
+            price: {
+              type: GraphQLInt,
+            },
             status: {
               type: GraphQLString,
             }
@@ -150,6 +153,7 @@ import db from '../index';
               name: args.name,
               description: args.description,
               userId: args.userId,
+              price: args.price,
               status: args.status ? args.statu : 'basic'
             });
           }
@@ -169,6 +173,9 @@ import db from '../index';
             status: {
               type: GraphQLString,
             },
+            price: {
+              type: GraphQLInt,
+            },
             likes: {
               type: GraphQLInt,
             },
@@ -178,6 +185,7 @@ import db from '../index';
               name: args.name,
               description: args.description,
               status: args.status,
+              price: args.price,
               likes: args.likes
             }, { where: { userId: args.userId }});
           }

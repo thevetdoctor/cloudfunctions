@@ -43,6 +43,12 @@ const Image: any = new GraphQLObjectType(imageSchema);
           return product.userId;
         },
       },
+      price: {
+        type: GraphQLInt,
+        resolve(product) {
+          return product.price;
+        }
+      },
       likes: {
         type: GraphQLInt,
         resolve(product) {

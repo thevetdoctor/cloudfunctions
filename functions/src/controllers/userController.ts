@@ -8,27 +8,30 @@ const userController = {
 
     signup() {
         async (req: any, res: any) => {
-            res.set("Access-Control-Allow-Origin", "*");
-            res.set("Access-Control-Allow-Headers", "Content-Type");
-
+            // res.set("Access-Control-Allow-Origin", "*");
+            // res.set("Access-Control-Allow-Headers", "Content-Type");
+            
             const { email, password } = req.body;
             try {
                 const signupResponse = await register(email, password);
                 // console.log(req.body, signupResponse);
                 if(signupResponse.success) {
                     const { auth: { user: { uid, email, authDomain, createdAt, lastLoginAt } } } = signupResponse;
-                    return res
-                            .status(StatusCodes.OK)
-                            .send({
-                                data: {
-                                    uid,
-                                    email,
-                                    authDomain,
-                                    createdAt,
-                                    lastLoginAt
-                                },
-                                // auth: signupResponse.auth.user
-                            });
+                //    return cors(req, res, () => {
+
+                        return res
+                        .status(StatusCodes.OK)
+                        .send({
+                            data: {
+                                uid,
+                                email,
+                                authDomain,
+                                createdAt,
+                                lastLoginAt
+                            },
+                            // auth: signupResponse.auth.user
+                        });
+                    // })
                 } else {
                     return res
                     .status(StatusCodes.NOT_ACCEPTABLE)
@@ -48,8 +51,8 @@ const userController = {
 
     login() {
         async (req, res) => {
-            res.set("Access-Control-Allow-Origin", "*");
-            res.set("Access-Control-Allow-Headers", "Content-Type");
+            // res.set("Access-Control-Allow-Origin", "*");
+            // res.set("Access-Control-Allow-Headers", "Content-Type");
             
             const { email, password } = req.body;
         
@@ -58,7 +61,8 @@ const userController = {
                 // console.log(req.body, loginResponse);
                 if(loginResponse.success) {
                     const { uid, email, authDomain, createdAt, lastLoginAt } = loginResponse.auth.user;
-                    return res
+                //    return cors(req, res, () => {
+                        return res
                             .status(StatusCodes.OK)
                             .send({
                                 data: {
@@ -70,6 +74,7 @@ const userController = {
                                 },
                                 // auth: loginResponse.auth.user
                             });
+                        // });
                 } else {
                     return res
                             .status(StatusCodes.NOT_ACCEPTABLE)
