@@ -1,47 +1,62 @@
 // Import/require dependencies
 import * as functions from "firebase-functions";
-const express = require('express');
-import { StatusCodes} from "http-status-codes";
-import { graphqlHTTP } from 'express-graphql';
-import Schema from './db/schema/schema';
-// import Schema from './db/schema/index';
-import userController from './controllers/userController';
-// import mailController from "./controllers/mailController";
-const cors = require("cors");
+const express = require("express");
+import { StatusCodes } from "http-status-codes";
+import { graphqlHTTP } from "express-graphql";
+import Schema from "./db/schema/schema";
+import mailController from "./controllers/mailController";
+import { errorType } from "./helpers/constants";
+const CORS = require("cors");
 
 // Initialize express app
 const app = express();
 
 // Set cross origin access
-app.use(cors({ origin : true }));
-app.options('*', cors);
-// app.use((req: any, res: any, next: any): void => {
-//   res.setHeader("Access-Control-Allow-Origin", "*");
-//   res.setHeader("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE", "OPTIONS");
-//   res.setHeader("Access-Control-Request-Headers", "Content-Type");
-//   next();
-// });
+app.use(CORS({ origin: true }));
 
 // Set authentication endpoints
-app.post('/signup', userController.signup);
-app.post('/login', userController.login);
-app.post('/forgotpassword', userController.forgotPassword);
-app.post('/resetpassword', userController.resetPassword);
-// app.post('/sendmail', mailController.sendMail);
+
+const middleware = (req, res, next) => {
+  console.log('user agent:', req.headers['user-agent']);
+  next();
+}
+app.use(middleware);
+
+app.post("/sendmail", mailController.sendMail);
+
+const getError = errorName => {
+  return errorType[errorName]
+}
 
 // Set graphQL endpoint
-app.use('/graphql', graphqlHTTP({
-schema: Schema,
-pretty: true,
-graphiql: true,
-}));
+app.use(
+  "/graphql", (req, res) => {
+  graphqlHTTP({
+    schema: Schema,
+    pretty: true,
+    graphiql: {
+      headerEditorEnabled: true
+    },
+    customFormatErrorFn: (err: any) => {
+      console.log('err:', err.message);
+      if(err.message.search('required') >= 0){
+        const error = getError('REQUIRED');
+        return { message: error.message, statusCode: error.statusCode }
+      } else {
+      const error = getError(err.message);
+      return { message: error.message, statusCode: error.statusCode }
+      }
+    }
+  })(req, res)
+  });
 
 // Set home/default route
-app.get('/', (req: any, res: any) => res
-  .status(StatusCodes.OK)
-  .send({
-    message: 'Welcome to BuildMyHouse'
-  }));
+app.get("/", (req: any, res: any) =>
+  res.status(StatusCodes.OK).send({
+    message: "Welcome to BuildMyHouse",
+    data: {},
+  })
+);
 
 // Connect express app to firebase serverless platform
 export const bmhAPi = functions.https.onRequest(app);
