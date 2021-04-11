@@ -85,6 +85,12 @@ const User = new GraphQLObjectType({
         return user.getShoppingcarts();
       },
     },
+    orders: {
+      type: new GraphQLList(Order),
+      resolve(user) {
+        return user.getOrders();
+      },
+    },
     posts: {
       type: new GraphQLList(Post),
       resolve(user) {
