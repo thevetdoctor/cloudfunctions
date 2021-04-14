@@ -22,6 +22,7 @@ export const productModel = {
   },
   price: {
     type: Sequelizee.INTEGER,
+    defaultValue: 0,
     // allowNull: false,
   },
   likes: {

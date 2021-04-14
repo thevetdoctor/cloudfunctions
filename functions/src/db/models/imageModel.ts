@@ -6,7 +6,7 @@ export const imageModel = {
   name: {
     type: Sequelizee.STRING,
     allowNull: false,
-    unique: true
+    // unique: true
   },
   description: {
     type: Sequelizee.STRING,

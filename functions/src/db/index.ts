@@ -82,7 +82,7 @@ Image.belongsTo(Product, {
   foreignKey: "productId",
 });
 
-// connection.sync({ force: true }).then((db) => {
+// connection.sync({ alter: true }).then((db) => {
 // console.log("DB refreshed")
 // });
 

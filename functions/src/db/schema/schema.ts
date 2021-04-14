@@ -520,10 +520,12 @@ const Query = new GraphQLObjectType({
         return db.models.order.findAll({
           where: args,
             include: [
-              { model: db.models.orderproduct,
-                  include: [
-                    { model: db.models.product }
-                  ]
+              { model: db.models.product,
+                as: 'products',
+                // through: {
+                // model: db.models.orderproduct,
+                // as: 'orderproduct'
+                // }
               }
             ] 
         });
@@ -1178,7 +1180,7 @@ const Mutation = new GraphQLObjectType({
             nest: true
           })
           if(!productAvailable) throw new Error(errorName.NOTFOUND);
-          console.log('product available');
+          console.log('product available', productAvailable);
          
           const orderActive:any = await db.models.order.findOne({
             where: {
@@ -1194,7 +1196,7 @@ const Mutation = new GraphQLObjectType({
             nest: true
           });
           if(orderActive){
-            console.log('active order exist');
+            console.log('active order exist', orderActive);
             const productExistOnOrder: any = await db.models.orderproduct.findOne({
               where: {
                 orderId: orderActive.id,
@@ -1203,7 +1205,7 @@ const Mutation = new GraphQLObjectType({
               raw: true
             });
             if(productExistOnOrder) {
-              console.log('product exist on order');
+              console.log('product exist on order', productExistOnOrder);
               await db.models.orderproduct.update({
                 quantity: productExistOnOrder.quantity + args.quantity
               }, {
@@ -1212,6 +1214,7 @@ const Mutation = new GraphQLObjectType({
                 productId: productAvailable.id
                 }
               });
+              console.log(`${orderActive.totalValue} + ${(productAvailable.price * args.quantity)}`)
               await db.models.order.update({
                 totalValue: orderActive.totalValue + (productAvailable.price * args.quantity)
               }, {
@@ -1258,6 +1261,7 @@ const Mutation = new GraphQLObjectType({
             {
               raw: true
             });
+            console.log('new order', newOrder, 'totalValue:', productAvailable.price * args.quantity);
             await db.models.orderproduct.create({
               userId: args.userId,
               orderId: newOrder.id,
@@ -1345,6 +1349,13 @@ const Mutation = new GraphQLObjectType({
                   productId: productAvailable.id
                   }
                 });
+                await db.models.order.update({
+                  totalValue: orderActive.totalValue - (productAvailable.price * args.quantity)
+                }, {
+                  where: {
+                    id: orderActive.id,
+                  }
+                });
                 console.log('last product unit removed from order');
               } else {
                 await db.models.orderproduct.update({
@@ -1379,7 +1390,122 @@ const Mutation = new GraphQLObjectType({
           throw new Error(errorName.NOTFOUND);
         }
         },
-      }
+      },
+      deleteOrder: {
+        type: Order,
+        args: {
+          userId: {
+            type: new GraphQLNonNull(GraphQLInt),
+          },
+          productId: {
+            type: new GraphQLNonNull(GraphQLInt),
+          },
+          status: {
+            type: GraphQLString,
+          },
+        },
+        async resolve(_, args, { headers }) {
+
+          await checkAuth(headers);
+          try {
+          const productAvailable: any = await db.models.product.findByPk(args.productId, {
+            raw: true,
+            nest: true
+          })
+          if(!productAvailable) throw new Error(errorName.NOTFOUND);
+          console.log('product available');
+         
+          const orderActive:any = await db.models.order.findOne({
+            where: {
+              userId: args.userId,
+              status: 'active'
+            },
+            include: [
+              {model: db.models.product, as: 'products',
+              }],
+            raw: true,
+            nest: true
+          });
+          if(orderActive){
+            console.log('active order exist');
+            const productExistOnOrder: any = await db.models.orderproduct.findOne({
+              where: {
+                orderId: orderActive.id,
+              productId: productAvailable.id
+              },
+              raw: true
+            });
+            if(!productExistOnOrder) {
+              console.log('product does not exist on order');
+              throw new Error(errorName.NOTFOUND);         
+            } else {
+              console.log('product exist on order', productExistOnOrder);
+              await db.models.order.update({
+                totalValue: orderActive.totalValue - (productAvailable.price * productExistOnOrder.quantity)
+              }, {
+                where: {
+                  id: orderActive.id,
+                }
+              });
+                await db.models.orderproduct.destroy({
+                  where: {
+                    orderId: orderActive.id,
+                  productId: productAvailable.id
+                  }
+                });
+                console.log('last product unit removed from order');
+              return db.models.order.findOne({
+                where: {
+                  id: orderActive.id
+                }
+              });
+            }
+          } else {
+            throw new Error(errorName.NOTFOUND);         
+          }
+        } catch(error) {
+          console.log(error);
+          throw new Error(errorName.NOTFOUND);
+        }
+        },
+      },
+      checkoutOrder: {
+        type: Order,
+        args: {
+          id: {
+            type: new GraphQLNonNull(GraphQLInt),
+          },
+          userId: {
+            type: new GraphQLNonNull(GraphQLInt),
+          },
+          status: {
+            type: GraphQLString,
+          },
+        },
+        async resolve(_, args, { headers }) {
+
+          await checkAuth(headers);
+          try {         
+              const orderActive:any = await db.models.order.findOne({
+                where: {
+                  id: args.id,
+                  userId: args.userId,
+                  status: 'active'
+                }
+              });
+              if(!orderActive) throw new Error(errorName.NOTFOUND); 
+              console.log('active order exist');
+              await orderActive.update({
+                status: 'confirmed'
+              });
+              console.log('order confirmed');
+              return orderActive;
+            } catch(error) {
+              console.log(error);
+              throw new Error(errorName.NOTFOUND);
+            }
+        },
+      },
     };
   },
 });
